@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu Flashcards</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #fce4ec, #e3f2fd);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+h1 {
+  color: #444;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.card {
+  perspective: 1000px;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.card.flipped .inner {
+  transform: rotateY(180deg);
+}
+
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.front {
+  background: #ffffff;
+  font-weight: bold;
+}
+
+.back {
+  background: #ffecb3;
+  transform: rotateY(180deg);
+  font-size: 14px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: #ff80ab;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ff4081;
+}
+</style>
+</head>
+<body>
+
+<h1>🍽️ Menu Flashcards</h1>
+
+<div class="container" id="cards"></div>
+
+<button onclick="shuffleCards()">Shuffle 🔀</button>
+
+<script>
+const flashcards = [
+  { q: "Smoked Salmon Sandwich", a: "Gluten, Milk, Fish, Sulphites, Soya" },
+  { q: "Club Sandwich", a: "Gluten, Mustard, Soya, Sesame, Eggs" },
+  { q: "Chimichurri Beef Sandwich", a: "Gluten, Milk, Sulphur dioxide" },
+  { q: "Hummus & Avocado", a: "Gluten, Sesame, Sulphites, Soya" },
+  { q: "Ham & Cheese Panini", a: "Gluten, Milk, Sesame, Mustard" },
+  { q: "Tuna Melt Panini", a: "Gluten, Milk, Egg, Mustard, Fish, Sesame" },
+  { q: "Margherita Pizza", a: "Gluten, Milk, Egg" },
+  { q: "Pepperoni Pizza", a: "Gluten, Milk, Egg" },
+  { q: "Caesar Salad", a: "Gluten, Milk, Fish, Mustard, Eggs, Soya" },
+  { q: "Asian Crunch Salad", a: "Soya, Gluten, Sesame, Celery" },
+  { q: "Beef Bulgogi Bowl", a: "Gluten, Eggs, Mustard, Sesame, Soya" },
+  { q: "Teriyaki Salmon Bowl", a: "Gluten, Eggs, Fish, Soya, Nuts, Peanuts, Mustard" },
+  { q: "Tofu Bowl", a: "Gluten, Soya, Celery, Mustard" },
+  { q: "Pad Thai", a: "Eggs, Peanuts, Fish, Molluscs, Sulphites, Celery, Mustard, Gluten, Soya, Nuts" },
+  { q: "Laksa Soup", a: "Eggs, Soya, Celery, Mustard, Gluten, Crustaceans" }
+];
+
+function createCards() {
+  const container = document.getElementById('cards');
+  container.innerHTML = '';
+
+  flashcards.forEach(card => {
+    const div = document.createElement('div');
+    div.className = 'card';
+
+    div.innerHTML = `
+      <div class="inner">
+        <div class="front">${card.q}</div>
+        <div class="back">${card.a}</div>
+      </div>
+    `;
+
+    div.addEventListener('click', () => {
+      div.classList.toggle('flipped');
+    });
+
+    container.appendChild(div);
+  });
+}
+
+function shuffleCards() {
+  flashcards.sort(() => Math.random() - 0.5);
+  createCards();
+}
