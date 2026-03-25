@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tea 5 – Menu Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --parchment: #ede5d0;
+    --deep-red: #8b1a1a;
+    --wine: #5c1010;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --dark: #1a1208;
+    --mid: #3d2b1f;
+    --text: #2c1a0e;
+    --green: #2d6a4f;
+    --leaf: #40916c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--dark);
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Textured background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(139,26,26,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(201,168,76,0.1) 0%, transparent 50%),
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,0.01) 40px,
+        rgba(255,255,255,0.01) 41px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 50px 20px 30px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    margin-bottom: 40px;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+
+  .logo-line {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+
+  .logo-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(201,168,76,0.4);
+  }
+
+  .ornament {
+    color: var(--deep-red);
+    font-size: 20px;
+    letter-spacing: 8px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: 3px;
+    margin-top: 12px;
+  }
+
+  header p {
+    font-size: 16px;
+    color: rgba(245,240,232,0.6);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Nav tabs */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: rgba(245,240,232,0.6);
+    padding: 10px 28px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--deep-red);
+    border-color: var(--deep-red);
+    color: var(--cream);
+  }
+
+  /* Sections */
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== FLASHCARDS ===== */
+  .category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+    justify-content: center;
+  }
+
+  .cat-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: rgba(245,240,232,0.7);
+    padding: 6px 18px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .cat-btn:hover, .cat-btn.active {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .flashcard-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .card-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(245,240,232,0.4);
+    letter-spacing: 2px;
+  }
+
+  .flashcard-wrapper {
+    width: 100%;
+    max-width: 640px;
+    height: 340px;
+    perspective: 1200px;
+    cursor: pointer;
+  }
+
+  .flashcard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .flashcard.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: linear-gradient(135deg, rgba(26,18,8,0.95) 0%, rgba(61,43,31,0.9) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+  }
+
+  .card-face::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(201,168,76,0.15);
+    pointer-events: none;
+  }
+
+  .card-back { transform: rotateY(180deg); }
+
+  .card-category {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  .card-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    color: var(--cream);
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .card-hint {
+    font-size: 13px;
+    color: rgba(245,240,232,0.35);
+    font-style: italic;
+  }
+
+  .card-price-badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .card-desc {
+    font-size: 15px;
+    color: rgba(245,240,232,0.8);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+
+  .allergen-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .allergen-tag {
+    background: rgba(139,26,26,0.4);
+    border: 1px solid rgba(139,26,26,0.6);
+    color: #ff9999;
+    padding: 3px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    border-radius: 1px;
+  }
+
+  .badge-v { color: #7dd87d; font-size: 12px; }
+  .badge-vg { color: #40916c; font-size: 12px; }
+
+  .card-kcal {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(245,240,232,0.35);
+    margin-top: 6px;
+  }
+
+  .flip-hint {
+    font-size: 12px;
+    color: rgba(245,240,232,0.3);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
+
+  .card-nav {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .card-nav-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold);
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-nav-btn:hover {
+    background: rgba(201,168,76,0.15);
+  }
+
+  .shuffle-btn {
+    background: rgba(139,26,26,0.3);
+    border: 1px solid var(--deep-red);
+    color: var(--cream);
+    padding: 10px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shuffle-btn:hover { background: var(--deep-red); }
+
+  /* ===== MENU REFERENCE ===== */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+    margin-bottom: 40px;
+  }
+
+  .menu-section-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 24px;
+  }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .menu-item {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .menu-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .item-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--cream);
+    flex: 1;
+  }
+
+  .item-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .item-desc {
+    font-size: 13px;
+    color: rgba(245,240,232,0.55);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+
+  .item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .item-kcal {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(245,240,232,0.3);
+  }
+
+  /* ===== QUIZ GAME ===== */
+  .game-area {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .game-score-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 16px 24px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .score-item {
+    text-align: center;
+  }
+
+  .score-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(245,240,232,0.4);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .score-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--gold);
+  }
+
+  .game-progress {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  .game-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--deep-red), var(--gold));
+    transition: width 0.5s ease;
+  }
+
+  .quiz-card {
+    background: linear-gradient(135deg, rgba(26,18,8,0.97) 0%, rgba(61,43,31,0.95) 100%);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 36px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .quiz-card::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(201,168,76,0.1);
+    pointer-events: none;
+  }
+
+  .quiz-type-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--deep-red);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .quiz-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(18px, 3vw, 26px);
+    color: var(--cream);
+    line-height: 1.4;
+    margin-bottom: 28px;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .quiz-option {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(245,240,232,0.85);
+    padding: 14px 18px;
+    text-align: left;
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1.3;
+  }
+
+  .quiz-option:hover:not(:disabled) {
+    background: rgba(201,168,76,0.1);
+    border-color: rgba(201,168,76,0.4);
+    color: var(--cream);
+  }
+
+  .quiz-option.correct {
+    background: rgba(45,106,79,0.4);
+    border-color: var(--green);
+    color: #a8e6cf;
+  }
+
+  .quiz-option.wrong {
+    background: rgba(139,26,26,0.4);
+    border-color: var(--deep-red);
+    color: #ffaaaa;
+  }
+
+  .quiz-option:disabled { cursor: default; }
+
+  .quiz-feedback {
+    margin-top: 20px;
+    padding: 14px 20px;
+    font-family: 'Crimson Pro', serif;
+    font-size: 15px;
+    border-left: 3px solid;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { border-color: var(--green); color: #a8e6cf; background: rgba(45,106,79,0.15); }
+  .quiz-feedback.wrong { border-color: var(--deep-red); color: #ffaaaa; background: rgba(139,26,26,0.15); }
+
+  .next-btn {
+    display: none;
+    margin-top: 20px;
+    background: var(--deep-red);
+    border: none;
+    color: var(--cream);
+    padding: 14px 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .next-btn:hover { background: var(--wine); }
+  .next-btn.show { display: block; }
+
+  /* Results */
+  .results-panel {
+    text-align: center;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, rgba(26,18,8,0.97) 0%, rgba(61,43,31,0.95) 100%);
+    border: 1px solid rgba(201,168,76,0.3);
+    display: none;
+  }
+
+  .results-panel.show { display: block; animation: fadeIn 0.5s ease; }
+
+  .results-score-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 90px;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 60px rgba(201,168,76,0.4);
+    margin-bottom: 8px;
+  }
+
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--cream);
+    margin-bottom: 12px;
+  }
+
+  .results-sub {
+    color: rgba(245,240,232,0.5);
+    font-size: 16px;
+    font-style: italic;
+    margin-bottom: 36px;
+  }
+
+  .play-again-btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 14px 40px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .play-again-btn:hover { background: var(--gold); color: var(--dark); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 24px 0;
+    font-size: 13px;
+    color: rgba(245,240,232,0.5);
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  /* Responsive */
+  @media (max-width: 540px) {
+    .quiz-options { grid-template-columns: 1fr; }
+    .flashcard-wrapper { height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-badge">
+    <span class="logo-line">TEA</span>
+    <span class="logo-num">5</span>
+  </div>
+  <div class="ornament">✦ ✦ ✦</div>
+  <h1>MENU MASTER</h1>
+  <p>Lunch — Served 11:00 to 16:30</p>
+</header>
+
+<div class="container">
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showSection('flashcards')">FLASHCARDS</button>
+    <button class="tab-btn" onclick="showSection('quiz')">QUIZ GAME</button>
+    <button class="tab-btn" onclick="showSection('reference')">FULL MENU</button>
+  </nav>
+
+  <!-- FLASHCARDS -->
+  <section id="flashcards" class="section active">
+    <div class="category-filter" id="catFilter"></div>
+    <div class="flashcard-area">
+      <span class="card-counter" id="cardCounter">1 / 30</span>
+      <div class="flashcard-wrapper" onclick="flipCard()">
+        <div class="flashcard" id="flashcard">
+          <div class="card-face card-front" id="cardFront"></div>
+          <div class="card-face card-back" id="cardBack"></div>
+        </div>
+      </div>
+      <p class="flip-hint">TAP TO REVEAL</p>
+      <div class="card-nav">
+        <button class="card-nav-btn" onclick="prevCard()">←</button>
+        <button class="shuffle-btn" onclick="shuffleCards()">⇌ SHUFFLE</button>
+        <button class="card-nav-btn" onclick="nextCard()">→</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="section">
+    <div class="game-area">
+      <div class="game-score-bar">
+        <div class="score-item">
+          <span class="score-label">SCORE</span>
+          <span class="score-value" id="scoreVal">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">QUESTION</span>
+          <span class="score-value" id="qNumVal">1</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">STREAK</span>
+          <span class="score-value" id="streakVal">0🔥</span>
+        </div>
+      </div>
+      <div class="game-progress"><div class="game-progress-fill" id="progressFill"></div></div>
+      <div id="quizCard" class="quiz-card">
+        <span class="quiz-type-tag" id="quizTypeTag"></span>
+        <p class="quiz-question" id="quizQuestion"></p>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextQuestion()">NEXT QUESTION →</button>
+      </div>
+      <div class="results-panel" id="resultsPanel">
+        <div class="results-score-big" id="finalScore">0</div>
+        <h2 class="results-title" id="finalTitle"></h2>
+        <p class="results-sub" id="finalSub"></p>
+        <button class="play-again-btn" onclick="startQuiz()">PLAY AGAIN</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REFERENCE -->
+  <section id="reference" class="section">
+    <div class="legend">
+      <span class="legend-item"><span class="badge-v">V</span> Vegetarian</span>
+      <span class="legend-item"><span class="badge-vg">🌿</span> Vegan</span>
+      <span class="legend-item">📍 Locally Sourced</span>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <p style="text-align:center; font-size:13px; color:rgba(245,240,232,0.3); margin-top:24px; font-style:italic; max-width:700px; margin-left:auto; margin-right:auto; line-height:1.7;">
+      Prices include VAT. Optional service charge of 12.5% will be added to your bill. Menu descriptions do not include all ingredients — if you have a food allergy, please let us know before ordering. Full allergen information is available.
+    </p>
+  </section>
+</div>
+
+<script>
+// ============================================================
+// MENU DATA
+// ============================================================
+const menuData = [
+  // SOUP
+  { id:1, category:'Soup', name:'Soup of the Day', price:10.50, kcal:74, desc:'Freshly made soup served with sourdough bread and butter.', allergens:['Gluten','Milk','Egg'], badges:['V'], dietary:'Vegetarian' },
+
+  // SANDWICHES
+  { id:2, category:'Sandwiches', name:'Smoked Salmon Sandwich', price:18.00, kcal:659, desc:'Cream cheese, cucumber.', allergens:['Gluten','Milk','Fish','Sulphite','Soya'], badges:[] },
+  { id:3, category:'Sandwiches', name:'Club Sandwich', price:18.50, kcal:983, desc:'Chicken, bacon, fried egg, beef tomato, romaine lettuce, mayonnaise.', allergens:['Gluten','Mustard','Soya','Sesame','Eggs'], badges:[] },
+  { id:4, category:'Sandwiches', name:'Chimichurri Beef Steak Sandwich', price:22.00, kcal:489, desc:'Roasted onions and peppers, rocket leaves on ciabatta.', allergens:['Gluten','Milk','Sulphur Dioxide','Soya'], badges:['📍'], locally:true },
+  { id:5, category:'Sandwiches', name:'Hummus & Avocado Sandwich', price:14.50, kcal:483, desc:'With roasted red peppers on multi grain bread.', allergens:['Gluten','Sesame','Sulphite','Soya'], badges:['V'] },
+  { id:6, category:'Sandwiches', name:'Ham & Cheese Panini', price:16.00, kcal:588, desc:'Cheddar cheese, Dijon mustard.', allergens:['Gluten','Milk','Sesame','Mustard'], badges:[] },
+  { id:7, category:'Sandwiches', name:'Tuna Melt Panini', price:16.00, kcal:805, desc:'Mayonnaise, red onion, cheddar cheese.', allergens:['Gluten','Milk','Egg','Mustard','Fish','Sesame'], badges:[] },
+  { id:8, category:'Sandwiches', name:'Sweet Potato & Falafel Wrap', price:15.50, kcal:638, desc:'Mixed peppers, hummus, spinach & no nut pesto.', allergens:['Gluten','Sulphite','Sesame'], badges:['V','🌿'] },
+  { id:9, category:'Sandwiches', name:'Peri Peri Chicken Wrap', price:18.50, kcal:385, desc:'Mixed roasted peppers, red onion, garlic.', allergens:['Gluten','Sulphur Dioxide'], badges:[] },
+
+  // PIZZA
+  { id:10, category:'Pizza', name:'Margherita Pizza', price:17.00, kcal:629, desc:'Grated cheddar and mozzarella cheese, tomato sauce.', allergens:['Gluten','Milk','Egg'], badges:['V'] },
+  { id:11, category:'Pizza', name:'Pepperoni Pizza', price:17.50, kcal:688, desc:'Pepperoni, grated cheddar and mozzarella cheese, oregano, tomato sauce.', allergens:['Gluten','Milk','Egg'], badges:[] },
+
+  // SALADS
+  { id:12, category:'Salads', name:'Caesar Salad', price:14.50, kcal:435, desc:'Romaine lettuce, anchovies, rustic croutons, shaved parmesan, Caesar dressing.', allergens:['Gluten','Milk','Fish','Mustard','Eggs','Soya'], badges:[] },
+  { id:13, category:'Salads', name:'Sweet Potato & Lentil Salad', price:15.50, kcal:null, desc:'Roasted sweet potato, chickpeas, cherry tomato, onion, rocket & curry dressing.', allergens:['Milk','Sulphite'], badges:['V'] },
+  { id:14, category:'Salads', name:'Asian Crunch Salad', price:15.50, kcal:299, desc:'Home grown pea sprouts, mixed leaves, edamame beans, cherry tomato, crispy fried onion, carrot and radish pickle, wakame, ginger soy dressing.', allergens:['Soya','Gluten','Sesame','Celery'], badges:['V','🌿'] },
+
+  // SALAD ADD-ONS
+  { id:15, category:'Salad Extras', name:'Roasted Chicken Breast', price:9.00, kcal:195, desc:'Add to your salad.', allergens:[], badges:[] },
+  { id:16, category:'Salad Extras', name:'Roasted Salmon', price:13.00, kcal:125, desc:'Add to your salad.', allergens:['Fish'], badges:[] },
+  { id:17, category:'Salad Extras', name:'Smoked Salmon', price:12.50, kcal:93, desc:'Add to your salad.', allergens:['Fish'], badges:[] },
+  { id:18, category:'Salad Extras', name:'Grilled Tofu', price:8.00, kcal:250, desc:'Add to your salad.', allergens:['Soya'], badges:['V','🌿'] },
+
+  // BOWL FOOD
+  { id:19, category:'Bowl Food', name:'Beef Bulgogi Bowl', price:22.50, kcal:651, desc:'Brown rice, avocado, fried egg bok choi, edamame beans, carrot sesame, Ssamjang sauce.', allergens:['Gluten','Eggs','Mustard','Sesame','Soy'], badges:['📍'] },
+  { id:20, category:'Bowl Food', name:'Teriyaki Salmon Bowl', price:22.00, kcal:765, desc:'Rice, avocado, edamame beans, tender stem broccoli, purple slaw.', allergens:['Gluten','Eggs','Fish','Soya','Nuts','Peanuts','Mustard'], badges:[] },
+  { id:21, category:'Bowl Food', name:'Tofu Bowl', price:18.50, kcal:346, desc:'Brown rice, pumpkin, edamame beans, carrot cabbage & coriander slaw, roasted peppers, toasted pumpkin seeds, wasabi & citrus dressing.', allergens:['Gluten','Soya','Celery','Mustard'], badges:['V','🌿'] },
+  { id:22, category:'Bowl Food', name:'Portobello Mushroom Bowl', price:18.00, kcal:775, desc:'Brown rice, sweet potato, edamame beans, purple slaw, sriracha mayo.', allergens:['Eggs','Mustard','Gluten','Soy'], badges:['V'] },
+  { id:23, category:'Bowl Food', name:'Pad Thai Noodles', price:18.50, kcal:875, desc:'Stir fried rice noodles, egg, bean sprouts, firm tofu, toasted peanuts & fresh lime.', allergens:['Eggs','Peanuts','Fish','Molluscs','Sulphite','Celery (MC)','Mustard (MC)','Gluten','Soya','Nuts'], badges:[] },
+  { id:24, category:'Bowl Food', name:'Laksa Noodle Soup', price:18.50, kcal:875, desc:'Egg noodles, bok choi, bean sprouts, chili, coriander, boiled egg, fried shallots, tofu, spicy coconut curry broth.', allergens:['Eggs','Soy','Celery (MC)','Mustard (MC)','Gluten','Crustacean'], badges:[] },
+
+  // SIDES
+  { id:25, category:'Sides', name:'French Fries', price:5.50, kcal:236, desc:'Classic fries.', allergens:[], badges:['V','🌿'] },
+  { id:26, category:'Sides', name:'Sweet Potato Fries', price:6.50, kcal:406, desc:'Sweet potato fries.', allergens:[], badges:['V','🌿'] },
+  { id:27, category:'Sides', name:'Green Side Salad', price:6.50, kcal:60, desc:'Fresh green salad.', allergens:[], badges:['V','🌿'] },
+];
+
+// ============================================================
+// FLASHCARD LOGIC
+// ============================================================
+let allCards = [...menuData];
+let filteredCards = [...allCards];
+let currentCardIdx = 0;
+let isFlipped = false;
+let activeCategory = 'All';
+
+const categories = ['All', ...new Set(menuData.map(m => m.category))];
+
+function buildCategoryFilter() {
+  const el = document.getElementById('catFilter');
+  el.innerHTML = categories.map(c =>
+    `<button class="cat-btn ${c === 'All' ? 'active' : ''}" onclick="setCategory('${c}')">${c}</button>`
+  ).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.textContent === cat));
+  filteredCards = cat === 'All' ? [...allCards] : allCards.filter(m => m.category === cat);
+  currentCardIdx = 0;
+  renderCard();
+}
+
+function renderCard() {
+  const card = filteredCards[currentCardIdx];
+  isFlipped = false;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('cardCounter').textContent = `${currentCardIdx + 1} / ${filteredCards.length}`;
+
+  // Front: name & category
+  document.getElementById('cardFront').innerHTML = `
+    <span class="card-category">${card.category}</span>
+    <h2 class="card-question">${card.name}</h2>
+    ${card.badges.length ? `<div style="font-size:14px;margin-top:8px;color:rgba(245,240,232,0.5)">${card.badges.join(' ')}</div>` : ''}
+    <p class="card-hint" style="margin-top:16px">Tap to see full details</p>
+  `;
+
+  // Back: all info
+  const allergenHtml = card.allergens.length
+    ? `<div class="allergen-tags">${card.allergens.map(a => `<span class="allergen-tag">${a}</span>`).join('')}</div>`
+    : `<p style="font-size:12px;color:rgba(245,240,232,0.3);margin-top:6px">No listed allergens</p>`;
+
+  document.getElementById('cardBack').innerHTML = `
+    <span class="card-category">${card.category}</span>
+    <div class="card-price-badge">£${card.price.toFixed(2)}</div>
+    <p class="card-desc">${card.desc}</p>
+    ${card.kcal ? `<p class="card-kcal">${card.kcal} kcal</p>` : ''}
+    ${allergenHtml}
+  `;
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('flashcard').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  currentCardIdx = (currentCardIdx + 1) % filteredCards.length;
+  renderCard();
+}
+
+function prevCard() {
+  currentCardIdx = (currentCardIdx - 1 + filteredCards.length) % filteredCards.length;
+  renderCard();
+}
+
+function shuffleCards() {
+  for (let i = filteredCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [filteredCards[i], filteredCards[j]] = [filteredCards[j], filteredCards[i]];
+  }
+  currentCardIdx = 0;
+  renderCard();
+}
+
+// ============================================================
+// QUIZ LOGIC
+// ============================================================
+const TOTAL_QUESTIONS = 15;
+let quizQuestions = [];
+let qIdx = 0;
+let score = 0;
+let streak = 0;
+let answered = false;
+
+function generateQuestions() {
+  const questions = [];
+  const items = [...menuData];
+
+  // Shuffle items
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+
+  const qTypes = ['price', 'allergen', 'desc', 'category', 'kcal', 'dietary'];
+
+  for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+    const item = items[i % items.length];
+    const type = qTypes[i % qTypes.length];
+    let q = null;
+
+    if (type === 'price') {
+      const others = items.filter(x => x.id !== item.id).slice(0, 3);
+      const opts = shuffle([
+        { text: `£${item.price.toFixed(2)}`, correct: true },
+        ...others.map(o => ({ text: `£${o.price.toFixed(2)}`, correct: false }))
+      ]);
+      q = {
+        type: 'PRICE CHECK',
+        question: `How much does the ${item.name} cost?`,
+        options: opts,
+        feedback: `The ${item.name} is £${item.price.toFixed(2)}.`
+      };
+    } else if (type === 'allergen' && item.allergens.length > 0) {
+      const correct = item.allergens[Math.floor(Math.random() * item.allergens.length)];
+      const allAllergens = ['Gluten','Milk','Eggs','Fish','Nuts','Peanuts','Soya','Sesame','Celery','Mustard','Crustacean','Sulphite'];
+      const wrong = shuffle(allAllergens.filter(a => !item.allergens.includes(a))).slice(0, 3);
+      const opts = shuffle([
+        { text: correct, correct: true },
+        ...wrong.map(w => ({ text: w, correct: false }))
+      ]);
+      q = {
+        type: 'ALLERGEN ALERT',
+        question: `Which allergen is found in the ${item.name}?`,
+        options: opts,
+        feedback: `The ${item.name} contains: ${item.allergens.join(', ')}.`
+      };
+    } else if (type === 'desc') {
+      const others = shuffle(items.filter(x => x.id !== item.id)).slice(0, 3);
+      const opts = shuffle([
+        { text: item.name, correct: true },
+        ...others.map(o => ({ text: o.name, correct: false }))
+      ]);
+      const shortDesc = item.desc.length > 80 ? item.desc.substring(0,80) + '…' : item.desc;
+      q = {
+        type: 'NAME THAT DISH',
+        question: `Which dish is described as: "${shortDesc}"`,
+        options: opts,
+        feedback: `That's the ${item.name} — ${item.desc}`
+      };
+    } else if (type === 'category') {
+      const cats = [...new Set(menuData.map(m => m.category))];
+      const wrong = shuffle(cats.filter(c => c !== item.category)).slice(0, 3);
+      const opts = shuffle([
+        { text: item.category, correct: true },
+        ...wrong.map(w => ({ text: w, correct: false }))
+      ]);
+      q = {
+        type: 'SECTION FINDER',
+        question: `Under which section would you find the ${item.name}?`,
+        options: opts,
+        feedback: `The ${item.name} is listed under ${item.category}.`
+      };
+    } else if (type === 'kcal' && item.kcal) {
+      const kcalRange = [
+        `${item.kcal} kcal`,
+        `${item.kcal - Math.floor(Math.random()*100+50)} kcal`,
+        `${item.kcal + Math.floor(Math.random()*100+50)} kcal`,
+        `${item.kcal + Math.floor(Math.random()*200+100)} kcal`
+      ];
+      const opts = shuffle(kcalRange.map((k, i) => ({ text: k, correct: i === 0 })));
+      q = {
+        type: 'CALORIE COUNTER',
+        question: `Approximately how many calories does the ${item.name} contain?`,
+        options: opts,
+        feedback: `The ${item.name} contains ${item.kcal} kcal.`
+      };
+    } else if (type === 'dietary' && item.badges.length > 0) {
+      const badge = item.badges[0];
+      const label = badge === 'V' ? 'Vegetarian' : badge === '🌿' ? 'Vegan' : 'Locally Sourced';
+      const opts = shuffle([
+        { text: 'Yes', correct: true },
+        { text: 'No', correct: false },
+        { text: 'Only on request', correct: false },
+        { text: 'Contains meat', correct: false }
+      ]);
+      q = {
+        type: 'DIETARY INFO',
+        question: `Is the ${item.name} suitable for ${label === 'Locally Sourced' ? 'local sourcing' : label.toLowerCase()}s?`,
+        options: opts,
+        feedback: `Yes! The ${item.name} is marked as ${label}.`
+      };
+    }
+
+    if (q) questions.push(q);
+  }
+
+  return questions.slice(0, TOTAL_QUESTIONS);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  quizQuestions = generateQuestions();
+  qIdx = 0; score = 0; streak = 0; answered = false;
+  document.getElementById('resultsPanel').classList.remove('show');
+  document.getElementById('quizCard').style.display = 'block';
+  updateScorebar();
+  renderQuestion();
+}
+
+function updateScorebar() {
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('qNumVal').textContent = qIdx + 1;
+  document.getElementById('streakVal').textContent = streak + (streak >= 3 ? '🔥' : '');
+  const pct = (qIdx / TOTAL_QUESTIONS) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function renderQuestion() {
+  if (qIdx >= quizQuestions.length) { showResults(); return; }
+  answered = false;
+  const q = quizQuestions[qIdx];
+
+  document.getElementById('quizTypeTag').textContent = q.type;
+  document.getElementById('quizQuestion').textContent = q.question;
+  document.getElementById('quizFeedback').className = 'quiz-feedback';
+  document.getElementById('quizFeedback').textContent = '';
+  document.getElementById('nextBtn').className = 'next-btn';
+
+  const optsEl = document.getElementById('quizOptions');
+  optsEl.innerHTML = q.options.map((o, i) =>
+    `<button class="quiz-option" onclick="selectOption(${i})">${o.text}</button>`
+  ).join('');
+
+  updateScorebar();
+}
+
+function selectOption(idx) {
+  if (answered) return;
+  answered = true;
+  const q = quizQuestions[qIdx];
+  const opts = document.querySelectorAll('.quiz-option');
+  const chosen = q.options[idx];
+
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (q.options[i].correct) btn.classList.add('correct');
+    else if (i === idx && !chosen.correct) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quizFeedback');
+  if (chosen.correct) {
+    score += 10 + (streak >= 2 ? 5 : 0);
+    streak++;
+    fb.textContent = (streak >= 3 ? '🔥 On fire! +' + (streak >= 2 ? '15' : '10') + ' pts — ' : '✓ Correct! — ') + q.feedback;
+    fb.className = 'quiz-feedback correct show';
+  } else {
+    streak = 0;
+    fb.textContent = '✗ Not quite — ' + q.feedback;
+    fb.className = 'quiz-feedback wrong show';
+  }
+
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('streakVal').textContent = streak + (streak >= 3 ? '🔥' : '');
+  document.getElementById('nextBtn').className = 'next-btn show';
+}
+
+function nextQuestion() {
+  qIdx++;
+  if (qIdx >= quizQuestions.length) { showResults(); return; }
+  renderQuestion();
+}
+
+function showResults() {
+  document.getElementById('quizCard').style.display = 'none';
+  const panel = document.getElementById('resultsPanel');
+  panel.classList.add('show');
+  const pct = Math.round((score / (TOTAL_QUESTIONS * 15)) * 100);
+  document.getElementById('finalScore').textContent = score;
+
+  let title, sub;
+  if (pct >= 90) { title = 'Outstanding!'; sub = 'You could run this kitchen yourself.'; }
+  else if (pct >= 70) { title = 'Very Good!'; sub = 'Almost menu-perfect. A few more runs and you\'ll nail it.'; }
+  else if (pct >= 50) { title = 'Getting There'; sub = 'Good effort — keep practising with the flashcards!'; }
+  else { title = 'Keep Practising'; sub = 'The flashcards will help — you\'ve got this!'; }
+
+  document.getElementById('finalTitle').textContent = title;
+  document.getElementById('finalSub').textContent = sub;
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// ============================================================
+// MENU REFERENCE
+// ============================================================
+function buildMenuReference() {
+  const sectionOrder = ['Soup','Sandwiches','Pizza','Salads','Salad Extras','Bowl Food','Sides'];
+  const grouped = {};
+  sectionOrder.forEach(s => { grouped[s] = menuData.filter(m => m.category === s); });
+
+  const html = sectionOrder.map(sec => `
+    <div class="menu-section-card">
+      <h3 class="menu-section-title">${sec}</h3>
+      ${grouped[sec].map(item => `
+        <div class="menu-item">
+          <div class="item-header">
+            <span class="item-name">${item.badges.includes('V') ? '<span class="badge-v">V</span> ' : ''}${item.badges.includes('🌿') ? '<span class="badge-vg">🌿</span> ' : ''}${item.name}</span>
+            <span class="item-price">£${item.price.toFixed(2)}</span>
+          </div>
+          <p class="item-desc">${item.desc}</p>
+          <div class="item-meta">
+            ${item.kcal ? `<span class="item-kcal">${item.kcal} kcal</span>` : ''}
+            ${item.allergens.length ? `<div class="allergen-tags" style="margin-top:6px">${item.allergens.map(a => `<span class="allergen-tag">${a}</span>`).join('')}</div>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  document.getElementById('menuGrid').innerHTML = html;
+}
+
+// ============================================================
+// TAB NAVIGATION
+// ============================================================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'quiz' && qIdx === 0 && score === 0) startQuiz();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+buildCategoryFilter();
+renderCard();
+buildMenuReference();
+
+// Keyboard nav for flashcards
+document.addEventListener('keydown', e => {
+  if (document.getElementById('flashcards').classList.contains('active')) {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft') prevCard();
+    if (e.key === ' ') { e.preventDefault(); flipCard(); }
+  }
+});
+</script>
+</body>
+</html>
